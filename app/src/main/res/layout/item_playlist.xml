@@ -6,16 +6,17 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/imageView"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/im_item_cover"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
+        app:actualImageResource="@drawable/music_2_cover"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/music_2_cover" />
+        app:roundedCornerRadius="8dp" />
 
     <TextView
         android:id="@+id/tv_item_artist"
@@ -26,7 +27,7 @@
         android:layout_marginBottom="8dp"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/tv_item_name"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/im_item_cover"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Reza sadeghi" />
