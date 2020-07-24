@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MusicAdapter.ICallbackListener {
+    // TODO: 7/24/2020 find music in phone
+    // TODO: 7/24/2020 play random music
 
     private ActivityMainBinding binding;
     private List<Music>         musicList    = Music.getList();
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private Timer               timer;
     private boolean             isDragging;
     private int                 currentMusic = 0;
+    private MusicAdapter        adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +37,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        adapter = new MusicAdapter(musicList, this);
         binding.rvMainPlaylist.setLayoutManager(new LinearLayoutManager(this, RecyclerView.VERTICAL, false));
-        binding.rvMainPlaylist.setAdapter(new MusicAdapter(musicList));
+        binding.rvMainPlaylist.setAdapter(adapter);
 
         onMusicChange(musicList.get(currentMusic));
 
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     case PLAYING:
                         mediaPlayer.pause();
                         musicState = MusicState.PAUSED;
+
                         binding.btnMainPlay.setImageResource(R.drawable.ic_play_32dp);
                         break;
                     case PAUSED:
@@ -77,6 +81,18 @@ public class MainActivity extends AppCompatActivity {
                 mediaPlayer.seekTo((int) slider.getValue()); // move into music
             }
         });
+        binding.btnMainForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goNextMusic();
+            }
+        });
+        binding.btnMainBackward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goPreviousMusic();
+            }
+        });
     }
 
     @Override
@@ -87,14 +103,21 @@ public class MainActivity extends AppCompatActivity {
         mediaPlayer = null;
     }
 
-    // TODO: 7/24/2020 timer bug
+
     private void onMusicChange(final Music music) {
+        adapter.notifyMusicChange(music);
         binding.sliderMain.setValue(0);
+        binding.tvMainArtist.setText(music.getArtist());
+        binding.ivMainArtist.setActualImageResource(music.getArtistResId());
+        binding.ivMainCover.setActualImageResource(music.getCoverResId());
+        binding.tvMainMusicName.setText(music.getName());
         mediaPlayer = MediaPlayer.create(this, music.getMusicFileResId());
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mediaPlayer.start();
+                musicState = MusicState.PLAYING;
+                binding.btnMainPlay.setImageResource(R.drawable.ic_pause_24dp);
                 timer = new Timer();
                 timer.schedule(new TimerTask() {
                     @Override
@@ -115,32 +138,38 @@ public class MainActivity extends AppCompatActivity {
                 }, 1000, 1000);
                 binding.tvMainTimeEnd.setText(Music.convertMillisToString(mediaPlayer.getDuration()));
                 binding.sliderMain.setValueTo(mediaPlayer.getDuration());
-                musicState = MusicState.PLAYING;
-                binding.btnMainPlay.setImageResource(R.drawable.ic_pause_24dp);
                 mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mp) {
-                        goNext();
+                        goNextMusic();
                     }
                 });
             }
         });
-
-        binding.ivMainArtist.setActualImageResource(music.getArtistResId());
-        binding.tvMainArtist.setText(music.getArtist());
-        binding.ivMainCover.setActualImageResource(music.getCoverResId());
-        binding.tvMainMusicName.setText(music.getName());
-        // TODO: 7/24/2020  binding.btnMainBackward  forward
-        // TODO: 7/24/2020 find music in phone
-        // TODO: 7/24/2020 loti anim
     }
 
-    private void goNext() {
+    private void goNextMusic() {
         timer.cancel();
         timer.purge();
         mediaPlayer.release();
         currentMusic = currentMusic < musicList.size() - 1 ? currentMusic + 1 : 0;
         onMusicChange(musicList.get(currentMusic));
+    }
+
+    private void goPreviousMusic() {
+        timer.cancel();
+        timer.purge();
+        mediaPlayer.release();
+        currentMusic = currentMusic == 0 ? musicList.size() - 1 : currentMusic - 1;
+        onMusicChange(musicList.get(currentMusic));
+    }
+
+    @Override
+    public void onClickItem(Music music, int position) {
+        timer.cancel();
+        timer.purge();
+        mediaPlayer.release();
+        onMusicChange(musicList.get(position));
     }
 
     private enum MusicState {PLAYING, PAUSED, STOPPED}

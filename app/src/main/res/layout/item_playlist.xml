@@ -20,13 +20,14 @@
 
     <TextView
         android:id="@+id/tv_item_artist"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/tv_item_name"
+        app:layout_constraintEnd_toStartOf="@+id/animationView"
         app:layout_constraintStart_toEndOf="@+id/im_item_cover"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
@@ -34,11 +35,25 @@
 
     <TextView
         android:id="@+id/tv_item_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/animationView"
         app:layout_constraintStart_toStartOf="@+id/tv_item_artist"
         app:layout_constraintTop_toBottomOf="@+id/tv_item_artist"
         tools:text="tanhatarin" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animationView"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/music_effect" />
 </androidx.constraintlayout.widget.ConstraintLayout>
