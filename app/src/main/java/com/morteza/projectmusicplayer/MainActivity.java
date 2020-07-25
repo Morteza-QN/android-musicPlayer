@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.google.android.material.slider.Slider;
 import com.morteza.projectmusicplayer.databinding.ActivityMainBinding;
@@ -46,17 +47,19 @@ public class MainActivity extends AppCompatActivity implements MusicAdapter.ICal
         binding.btnMainPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LottieAnimationView animationView = findViewById(R.id.animationView);
                 switch (musicState) {
                     case PLAYING:
                         mediaPlayer.pause();
                         musicState = MusicState.PAUSED;
-
+                        animationView.pauseAnimation();
                         binding.btnMainPlay.setImageResource(R.drawable.ic_play_32dp);
                         break;
                     case PAUSED:
                     case STOPPED:
                         mediaPlayer.start();
                         musicState = MusicState.PLAYING;
+                        animationView.playAnimation();
                         binding.btnMainPlay.setImageResource(R.drawable.ic_pause_24dp);
                         break;
                 }
